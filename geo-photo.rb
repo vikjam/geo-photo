@@ -1,0 +1,35 @@
+#! /usr/bin/env ruby
+require 'nokogiri'
+
+def decimal2degrees(coordinate, value)
+    decimal = value.to_f
+    unit    = decimal.to_i.abs.to_s
+    minutes = "%02d"   % (decimal.abs * 60).to_i.modulo(60)
+    seconds = "%02.4f" % (decimal.abs * 3600).modulo(60)
+    if coordinate.downcase() == "lat"
+        direction = ""
+        if decimal < 0
+            direction = "S"
+        else
+            direction = "N"
+        end
+    elsif coordinate.downcase() == "long"
+        if decimal > 0
+            direction = "E"
+        else
+            direction = "W"
+        end
+    end
+    return "#{unit}°#{minutes}'#{seconds}\"#{direction}"
+end
+
+def google2lightroom(theurl)
+    geo_str = theurl[/@.*z/]
+    dec_lat, dec_long = geo_str.gsub('@', '').split(',')[0..1]
+    deg_lat, deg_long = decimal2degrees("lat", dec_lat), decimal2degrees("long", dec_long)
+    return "#{deg_lat} #{deg_long}"
+end
+
+puts google2lightroom("https://www.google.com/maps/place/42%C2%B005'06.0%22N+71%C2%B040'06.0%22W/@42.085,-71.6683333,15z/data=!3m1!4b1!4m2!3m1!1s0x0:0x0")
+
+# End of script
