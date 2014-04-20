@@ -1,5 +1,4 @@
 #! /usr/bin/env ruby
-require 'nokogiri'
 
 def decimal2degrees(coordinate, value)
     decimal = value.to_f
