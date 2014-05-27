@@ -1,6 +1,8 @@
 #! /usr/bin/env ruby
+require 'csv'
+require 'mini_exiftool'
 
-def decimal2degrees(coordinate, value, return_hash=false)
+def decimal2degrees(coordinate, value, return_hash = false)
     decimal = value.to_f
     unit    = decimal.to_i.abs.to_s
     minutes = "%02d"   % (decimal.abs * 60).to_i.modulo(60)
@@ -16,7 +18,7 @@ def decimal2degrees(coordinate, value, return_hash=false)
             direction = "N"
         end
         exif_info["GPSLatitudeRef"] = direction
-        exif_info["GPSLatitude"] = "#{unit}, #{minutes}, #{seconds}"
+        exif_info["GPSLatitude"]    = "#{unit}, #{minutes}, #{seconds}"
     elsif coordinate.downcase() == "long"
         if decimal > 0
             direction = "E"
@@ -42,6 +44,30 @@ def google2lightroom(theurl)
     return "#{deg_lat} #{deg_long}"
 end
 
-puts google2lightroom("https://www.google.com/maps/place/42%C2%B005'06.0%22N+71%C2%B040'06.0%22W/@42.085,-71.6683333,15z/data=!3m1!4b1!4m2!3m1!1s0x0:0x0")
+# puts google2lightroom("https://www.google.com/maps/search/199+Prospect+St,+Cambridge,+MA/@42.0369215,-71.6835014,8z")
+
+# CSV.read("/Users/vikjam/Desktop/Nikon/geo.csv", "r").each do | row |
+#     puts "#{row[0]}, #{row[1]}, #{google2lightroom(row[1])}"
+# end
+
+class GoogleMapsLink
+
+  def initialize(google_url)
+    @google_url = google_url
+    @decimal_latitude, @decimal_longitude = @google_url[/@.*z/].gsub('@', '').split(',')[0..1]
+  end
+
+  def puts_link()
+    puts "#{@decimal_latitude}, #{@decimal_longitude}"
+  end
+
+end
+
+g = GoogleMapsLink.new("https://www.google.com/maps/search/199+Prospect+St,+Cambridge,+MA/@42.0369215,-71.6835014,8z")
+puts g.puts_link()
+
+photo = MiniExiftool.new("/Users/vikjam/Desktop/Nikon/DSC_0085.NEF")
+
+photo.save
 
 # End of script
