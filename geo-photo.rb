@@ -13,7 +13,7 @@ def decimal2degrees(coordinate, value)
   elsif coordinate.downcase() == "longitude"
     direction = decimal < 0 ? "W" : "E"
   else
-    raise "Hey, that's neither 'latitude' nor 'longitude'!"
+    raise "Hey, that's neither 'latitude' nor 'longitude'."
   end
 
   return direction, unit, minutes, seconds
@@ -39,7 +39,7 @@ class GoogleMapsLink
     @GPSLongitudeRef,
       @GPSLongitudeUnit,
       @GPSLongitudeMinutes,
-      @GPSLongitudeSeconds = decimal2degrees("longitude", @decimal_latitude)
+      @GPSLongitudeSeconds = decimal2degrees("longitude", @decimal_longitude)
   end
 
   def to_lightroom
@@ -48,30 +48,25 @@ class GoogleMapsLink
   end
 end
 
-# def append_googlemaps(photo, link)
-#   photo.GPSLatitudeRef = link.GPSLatitudeRef
-#   photo.GPSLatitude = "#{link.GPSLatitudeUnit}, "    + 
-#                      "#{link.GPSLatitudeMinutes}, " +
-#                      "#{link.GPSLatitudeSeconds}"
+def append_googlemaps(photo, link)
+  photo.GPSLatitudeRef = link.GPSLatitudeRef
+  photo.GPSLatitude = "#{link.GPSLatitudeUnit}, "    + 
+                      "#{link.GPSLatitudeMinutes}, " +
+                      "#{link.GPSLatitudeSeconds}"
+  photo.GPSLongitudeRef = link.GPSLongitudeRef
+  photo.GPSLongitude = "#{link.GPSLongitudeUnit}, "    + 
+                       "#{link.GPSLongitudeMinutes}, " +
+                       "#{link.GPSLongitudeSeconds}"
+  photo.save
+end
 
-#   photo.GPSLongitudeRef = link.GPSGPSLongitudeRef
-#   photo.GPSLongitude = "#{link.GPSLongitudeUnit}, "    + 
-#                       "#{link.GPSLongitudeMinutes}, " +
-#                       "#{link.GPSLongitudeSeconds}"
-# end
+def from_csv(csv_path)
+  CSV.read(csv_path).each do | row |
+    g = GoogleMapsLink.new(row[1])
+    puts "#{row[0]} | #{row[1]} | #{g.to_lightroom}"
+  end
+end
 
-
-photo = MiniExiftool.new("/Users/vikjam/Desktop/Nikon/DSC_0085.NEF")
-link = GoogleMapsLink.new("https://www.google.com/maps/place/Worcester,+MA/@42.2754349,-71.808442,12z/")
-photo.GPSLatitudeRef = link.GPSLatitudeRef
-photo.GPSLatitude = "#{link.GPSLatitudeUnit}, "     + 
-                     "#{link.GPSLatitudeMinutes}, " +
-                     "#{link.GPSLatitudeSeconds}"
-
-photo.GPSLongitudeRef = link.GPSLongitudeRef
-photo.GPSLongitude = "#{link.GPSLongitudeUnit}, "    + 
-                     "#{link.GPSLongitudeMinutes}, " +
-                     "#{link.GPSLongitudeSeconds}"
-photo.save
+from_csv("/Users/vikjam/Desktop/Nikon/geo.csv")
 
 # End of script
