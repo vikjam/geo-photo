@@ -31,7 +31,7 @@ class GoogleMapsLink
 
   def initialize(google_url)
     @google_url = google_url
-    @decimal_latitude, @decimal_longitude = @google_url[/@.*z/].gsub('@', '').split(',')[0..1]
+    @decimal_latitude, @decimal_longitude = @google_url[/@.*(z|m)/].gsub('@', '').split(',')[0..1]
     @GPSLatitudeRef,
       @GPSLatitudeUnit,
       @GPSLatitudeMinutes,
@@ -48,7 +48,9 @@ class GoogleMapsLink
   end
 end
 
-def append_googlemaps(photo, link)
+def append_googlemaps(photo_ref, url)
+  photo = MiniExiftool.new photo_ref
+  link  = GoogleMapsLink.new(url)
   photo.GPSLatitudeRef = link.GPSLatitudeRef
   photo.GPSLatitude = "#{link.GPSLatitudeUnit}, "    + 
                       "#{link.GPSLatitudeMinutes}, " +
@@ -60,13 +62,21 @@ def append_googlemaps(photo, link)
   photo.save
 end
 
-def from_csv(csv_path)
+def csv2lightroom(csv_path)
   CSV.read(csv_path).each do | row |
     g = GoogleMapsLink.new(row[1])
     puts "#{row[0]} | #{row[1]} | #{g.to_lightroom}"
   end
 end
 
-from_csv("/Users/vikjam/Desktop/Nikon/geo.csv")
+# g = GoogleMapsLink.new("https://www.google.com/maps/place/The+Topsfield+Commons+1854/@42.6363989,-70.9400629,14z/data=!4m2!3m1!1s0x0:0x2d1d51e887fe68b")
+# puts g.to_lightroom
+
+CSV.read("photo-geo.csv").each do | row |
+  g = GoogleMapsLink.new(row[1])
+  puts "#{row[0]} | #{row[1]} | #{g.to_lightroom}"
+  append_googlemaps(row[0], row[1])
+end
+
 
 # End of script
