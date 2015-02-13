@@ -69,14 +69,10 @@ def csv2lightroom(csv_path)
   end
 end
 
-# g = GoogleMapsLink.new("https://www.google.com/maps/place/The+Topsfield+Commons+1854/@42.6363989,-70.9400629,14z/data=!4m2!3m1!1s0x0:0x2d1d51e887fe68b")
-# puts g.to_lightroom
-
 CSV.read("photo-geo.csv").each do | row |
   g = GoogleMapsLink.new(row[1])
   puts "#{row[0]} | #{row[1]} | #{g.to_lightroom}"
   append_googlemaps(row[0], row[1])
 end
-
 
 # End of script
