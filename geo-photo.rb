@@ -2,6 +2,9 @@
 require 'csv'
 require 'mini_exiftool'
 
+# Define the file path
+file_path = "/Users/vikjam/Downloads/Import-Sept-16"
+
 def decimal2degrees(coordinate, value)
   decimal = value.to_f
   unit    = decimal.to_i.abs.to_s
@@ -69,10 +72,10 @@ def csv2lightroom(csv_path)
   end
 end
 
-CSV.read("photo-geo.csv").each do | row |
-  g = GoogleMapsLink.new(row[1])
+CSV.read("#{file_path}/photo-geo.csv", headers: true).each do | row |
+  g = GoogleMapsLink.new(row[2])
   puts "#{row[0]} | #{row[1]} | #{g.to_lightroom}"
-  append_googlemaps(row[0], row[1])
+  append_googlemaps("#{file_path}/#{row[0]}", row[2])
 end
 
 # End of script
