@@ -1,9 +1,12 @@
 #! /usr/bin/env ruby
 require 'csv'
 require 'mini_exiftool'
+require 'ruby-progressbar'
 
 # Define the file path
-file_path = "/Users/vikjam/Downloads/Import-Sept-16"
+puts "What is the full file path to the folder?"
+file_path = gets
+file_path = file_path.chomp
 
 def decimal2degrees(coordinate, value)
   decimal = value.to_f
@@ -72,10 +75,16 @@ def csv2lightroom(csv_path)
   end
 end
 
+# Create progress bar
+progressbar = ProgressBar.create(
+    total: CSV.read("#{file_path}/photo-geo.csv", headers: true).count
+)
+
 CSV.read("#{file_path}/photo-geo.csv", headers: true).each do | row |
   g = GoogleMapsLink.new(row[2])
-  puts "#{row[0]} | #{row[1]} | #{g.to_lightroom}"
+  progressbar.log "#{row[0]} | #{row[1]} | #{g.to_lightroom}"
   append_googlemaps("#{file_path}/#{row[0]}", row[2])
+  progressbar.increment
 end
 
 # End of script
