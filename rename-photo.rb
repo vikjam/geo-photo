@@ -44,7 +44,7 @@ Dir.glob("#{file_path}/*.{JPG,NEF,MOV}") do |pic_file|
     end
 
     rows << [new_file, file_extension]
-
+    progressbar.log "#{pic_file} => #{new_file}"
     progressbar.increment
 end
 
