@@ -77,12 +77,13 @@ end
 
 # Create progress bar
 progressbar = ProgressBar.create(
-    total: CSV.read("#{file_path}/photo-geo.csv", headers: true).count
+    total: CSV.read("#{file_path}/photo-geo.csv", headers: true).count,
+    format: '%t|%B|%p%%|%E'
 )
 
 CSV.read("#{file_path}/photo-geo.csv", headers: true).each do | row |
   g = GoogleMapsLink.new(row[2])
-  progressbar.log "#{row[0]} | #{row[1]} | #{g.to_lightroom}"
+  progressbar.title = "#{row[0]} - #{row[1]} - #{g.to_lightroom}"
   append_googlemaps("#{file_path}/#{row[0]}", row[2])
   progressbar.increment
 end

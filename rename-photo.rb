@@ -20,7 +20,8 @@ rows = [["file_path", "file_extension"]]
 
 # Create progress bar
 progressbar = ProgressBar.create(
-    total: Dir.glob("#{file_path}/*.{JPG,NEF,MOV}").length
+    total: Dir.glob("#{file_path}/*.{JPG,NEF,MOV}").length,
+    format: '%t|%B|%p%%|%E'
 )
 
 # Loop over all media files
@@ -44,7 +45,7 @@ Dir.glob("#{file_path}/*.{JPG,NEF,MOV}") do |pic_file|
     end
 
     rows << [new_file, file_extension]
-    progressbar.log "#{pic_file} => #{new_file}"
+    progressbar.title = "#{pic_file} => #{new_file}"
     progressbar.increment
 end
 
